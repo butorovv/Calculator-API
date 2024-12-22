@@ -1,0 +1,126 @@
+openapi: 3.0.0
+info:
+  title: Calculator API
+  description: API для вычисления выражений с использованием математических операций.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/v1
+paths:
+  /calculate:
+    post:
+      summary: Вычисляет математическое выражение
+      description: Принимает математическое выражение в теле запроса и возвращает результат вычисления.
+      operationId: calculateExpression
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalculateRequest'
+      responses:
+        '200':
+          description: Успешное выполнение
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculateResponse'
+        '400':
+          description: Ошибка запроса. Проверьте корректность входных данных
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse400BadRequest'
+                  - $ref: '#/components/schemas/ErrorResponse400InvalidExpression'
+        '422':
+          description: Выражение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse422'
+        '500':
+          description: Что-то пошло не так (иные ошибки)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse500'
+
+components:
+  schemas:
+    CalculateRequest:
+      type: object
+      properties:
+        expression:
+          type: string
+          example: "2 + 2 * 2"
+      required:
+        - expression
+
+    CalculateResponse:
+      type: object
+      properties:
+        result:
+          type: number
+          example: 6
+          
+    ErrorResponse400BadRequest:
+      type: object
+      properties:
+        error_code:
+          type: string
+          example: "BAD_REQUEST"
+        error:
+          type: string
+          example: "Bad request"
+
+    ErrorResponse400InvalidExpression:
+      type: object
+      properties:
+        error_code:
+          type: string
+          example: "INVALID_EXPRESSION_FORMAT"
+        error:
+          type: string
+          example: "No format expression"
+
+    ErrorResponse422:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Expression is not valid"
+          
+    ErrorResponse500:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Internal server error"
+
+x-examples:
+  - description: Примеры использования API
+    curl_example: |
+      curl --location 'localhost:8080/api/v1/calculate' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "expression": "2 + 2 * 2"
+      }'
+  - description: Ошибка 422 (выражение недействительно)
+    curl_example: |
+      curl --location 'localhost:8080/api/v1/calculate' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "expression": "2++2"
+      }'
+  - description: Ошибка 500 (внутренняя ошибка сервера)
+    curl_example: |
+      curl --location 'localhost:8080/api/v1/calculate' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "expression": "invalid_expression"
+      }'
+
+x-installation:
+  description: Как запустить проект
+  command: |
+    go run ./cmd/app
