@@ -123,4 +123,4 @@ x-examples:
 x-installation:
   description: Как запустить проект
   command: |
-    go run Calculate-service/cmd/app
+    go run ./Calculate-service/cmd/app
