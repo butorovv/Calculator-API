@@ -54,6 +54,7 @@ Calculator-API — это веб-приложение, реализующее RE
 #### Примеры запросов
 
      Примеры запросов представлены в полной документации docs 
+     
      https://github.com/butorovv/Calculator-API/blob/master/Calculate-service/docs/swagger.yaml
 
 #### Замечания
